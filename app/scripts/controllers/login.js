@@ -8,30 +8,48 @@
  * Controller of the flashhAngularApp
  */
 angular.module('flashhAngularApp')
-  .controller('LoginCtrl', function (authentication) {
-    console.log("login controller");
-     this.onSubmit = function () {
-      this.formError = "";
-      if (!this.credentials.email || !this.credentials.password) {
-        this.formError = "All fields required, please try again";
-        return false;
-      } else {
-        this.doLogin();
-      }
+  .controller('LoginCtrl', function (authentication,$location) {
+    var vm = this;
+    vm.pageHeader = {
+      title: 'Sign in to Loc8r'
     };
 
-    this.doLogin = function() {
-      this.formError = "";
+    vm.credentials = {
+      email : "",
+      password : ""
+    };
+
+    vm.onSubmit = function () {
+        vm.formError = "";
+        if (!vm.credentials.email || !vm.credentials.password) {
+          vm.formError = "All fields required, please try again";
+          return false;
+        } else {
+          vm.doLogin();
+        }
+    };
+
+    vm.doLogin = function() {
+      vm.formError = "";
       authentication
-        .login(this.credentials)
-        .error(function(err){
-          this.formError = err;
-        })
-        .then(function(){
-          //$location.search('page', null); 
-          //$location.path(vm.returnPage);
-          console.log("successfully loggedIn");
+        .login(vm.credentials)
+        .then(function(data){
+          if(data && data.status == "success"){
+            //Redirect to dashboard based on user role.
+            if(data.data.user.role == 'vendor'){
+              //vendor dashboard
+              $location.path('/vendorDashboard');
+            }
+          }
+          else if(data && data.status == "failure"){
+            console.log("error logging In :",data);  
+            vm.formError = data.message;
+          }
+          else{
+            vm.formError = "error contacting server :";
+            console.log("error contacting server :");   
+          }
         });
-    };
+     };
 
-  });
+});

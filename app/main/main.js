@@ -8,11 +8,13 @@
  * Controller of the flashhAngularApp
  */
 angular.module('flashhAngularApp')
-  .controller('MainCtrl', function () {
-  	console.log("MainCtrl");
-    this.awesomeThings = [
-      'HTML5 Boilerplate',
-      'AngularJS',
-      'Karma'
-    ];
-  });
+  .config(function($stateProvider) {
+    $stateProvider
+      .state('main', {
+        url: '/',
+        templateUrl: 'main/main.html',
+        controller: 'MainCtrl'
+    });
+});
+
+
